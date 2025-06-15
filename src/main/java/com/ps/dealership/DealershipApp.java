@@ -1,5 +1,8 @@
 package com.ps.dealership;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -9,14 +12,14 @@ public class DealershipApp {
     private static final SalesContractDAO salesDAO = new SalesContractDAO();
     private static final LeaseContractDAO leaseDAO = new LeaseContractDAO();
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         boolean running = true;
 
-        while (running){
+        while (running) {
             printMainMenu();
             String choice = scanner.nextLine();
 
-            switch (choice){
+            switch (choice) {
                 case "1":
                     searchVehiclesMenu();
                     break;
@@ -107,7 +110,7 @@ public class DealershipApp {
         }
 
         if (vehicles != null && !vehicles.isEmpty()) {
-            for (Vehicle v  :vehicles){
+            for (Vehicle v : vehicles) {
                 System.out.println(v);
             }
         } else {
@@ -150,49 +153,77 @@ public class DealershipApp {
     private static void removeVehicle() {
         System.out.print("Enter VIN of vehicle to remove: ");
         String vin = scanner.nextLine();
-        vehicleDAO.removeVehicle(vin);
-        System.out.println("Vehicle removed.");
+
+        String deleteInventorySQL = "DELETE FROM inventory WHERE vin = ?";
+        String deleteVehicleSQL = "DELETE FROM vehicles WHERE vin = ?";
+
+        try (Connection connection = DatabaseManager.getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+
+            try (
+                    PreparedStatement inventoryStatement = connection.prepareStatement(deleteInventorySQL);
+                    PreparedStatement vehicleStatement = connection.prepareStatement(deleteVehicleSQL)
+            ) {
+                inventoryStatement.setString(1, vin);
+                inventoryStatement.executeUpdate();
+
+                vehicleStatement.setString(1, vin);
+                vehicleStatement.executeUpdate();
+
+                connection.commit();
+                System.out.println("Vehicle removed successfully.");
+            } catch (SQLException e) {
+                connection.rollback();
+                System.out.println("Failed to remove vehicle. Rolling back.");
+                e.printStackTrace();
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-        private static void processSaleOrLease() {
-            System.out.print("Enter vehicle VIN: ");
-            String vin = scanner.nextLine();
 
-            System.out.print("Customer name: ");
-            String name = scanner.nextLine();
+    private static void processSaleOrLease() {
+        System.out.print("Enter vehicle VIN: ");
+        String vin = scanner.nextLine();
 
-            System.out.print("Customer email: ");
-            String email = scanner.nextLine();
+        System.out.print("Customer name: ");
+        String name = scanner.nextLine();
 
-            System.out.print("Is this a sale or lease? (S/L): ");
-            String type = scanner.nextLine().trim().toUpperCase();
+        System.out.print("Customer email: ");
+        String email = scanner.nextLine();
 
-            if (type.equals("S")) {
-                System.out.print("Sales price: ");
-                double price = Double.parseDouble(scanner.nextLine());
+        System.out.print("Is this a sale or lease? (S/L): ");
+        String type = scanner.nextLine().trim().toUpperCase();
 
-                double tax = price * 0.05;
-                double fee = price > 10000 ? 495 : 295;
-                double total = price + tax + fee;
-                double monthly = total / 24;
+        if (type.equals("S")) {
+            System.out.print("Sales price: ");
+            double price = Double.parseDouble(scanner.nextLine());
 
-                SalesContract contract = new SalesContract(vin, name, email, price, tax, fee, total, monthly);
-                salesDAO.save(contract);
-                System.out.println("Sale contract processed.");
-            } else if (type.equals("L")){
-                System.out.print("Lease price: ");
-                double price= Double.parseDouble(scanner.nextLine());
+            double tax = price * 0.05;
+            double fee = price > 10000 ? 495 : 295;
+            double total = price + tax + fee;
+            double monthly = total / 24;
 
-                double endValue = price * 0.5;
-                double leaseFee = 250;
-                double total = price + leaseFee;
-                double monthly = total / 36;
+            SalesContract contract = new SalesContract(vin, name, email, price, tax, fee, total, monthly);
+            salesDAO.save(contract);
+            System.out.println("Sale contract processed.");
+        } else if (type.equals("L")) {
+            System.out.print("Lease price: ");
+            double price = Double.parseDouble(scanner.nextLine());
 
-                LeaseContract contract = new LeaseContract(vin, name, email, price, endValue, leaseFee, total, monthly);
-                leaseDAO.save(contract);
-                System.out.println("Lease contract processed.");
-            } else {
-                System.out.println("Invalid input. Must be 'S' or 'L'.");
-            }
+            double endValue = price * 0.5;
+            double leaseFee = 250;
+            double total = price + leaseFee;
+            double monthly = total / 36;
+
+            LeaseContract contract = new LeaseContract(vin, name, email, price, endValue, leaseFee, total, monthly);
+            leaseDAO.save(contract);
+            System.out.println("Lease contract processed.");
+        } else {
+            System.out.println("Invalid input. Must be 'S' or 'L'.");
+        }
     }
 }

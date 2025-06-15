@@ -9,9 +9,9 @@ public class SalesContractDAO {
     private final DataSource dataSource = DatabaseManager.getDataSource();
 
     public void save(SalesContract contract){
-        String sql = "INSERT INTO sales_contracts (vin, customer_email, " +
-                "sales_price, sales_tax, processing_fee, total_price, monthly_payment) " +
-                "VALUES (? + ? + ? + ? + ? + ? + ? + ?);";
+        String sql = "INSERT INTO sales_contracts " +
+                "(vin, customer_name, customer_email, sales_price, sales_tax, processing_fee, total_price, monthly_payment) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

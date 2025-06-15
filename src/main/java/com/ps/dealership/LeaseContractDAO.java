@@ -9,10 +9,9 @@ public class LeaseContractDAO {
     private final DataSource dataSource = DatabaseManager.getDataSource();
 
     public void save(LeaseContract contract){
-        String sql = "INSERT INTO lease_contracts" +
-                "(vin, customer_name, customer_email, lease_price, expected_end_value" +
-                "lease_fee, total_price, monthly_payment)" +
-                "VALUES (? + ? + ? + ? + ? + ? + ? + ?)";
+        String sql = "INSERT INTO lease_contracts " +
+                "(vin, customer_name, customer_email, lease_price, expected_end_value, lease_fee, total_price, monthly_payment) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
