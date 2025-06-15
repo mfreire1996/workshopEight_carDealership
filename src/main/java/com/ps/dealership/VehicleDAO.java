@@ -185,7 +185,6 @@ public class VehicleDAO {
     // 🔁 Helper: map a database row to a Vehicle object
     private Vehicle mapRow(ResultSet resultSet) throws SQLException {
         return new Vehicle(
-                resultSet.getInt("id"),
                 resultSet.getString("vin"),
                 resultSet.getInt("year"),
                 resultSet.getString("make"),

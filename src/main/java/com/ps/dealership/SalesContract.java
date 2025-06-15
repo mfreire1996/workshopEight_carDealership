@@ -1,7 +1,7 @@
 package com.ps.dealership;
 
 public class SalesContract {
-    private int vehicleId;
+    private String vin;
     private String customerName;
     private String customerEmail;
     private double salesPrice;
@@ -13,8 +13,8 @@ public class SalesContract {
     public SalesContract() {
     }
 
-    public SalesContract(int vehicleId, String customerName, String customerEmail, double salesPrice, double salesTax, double processingFee, double totalPrice, double monthlyPayment) {
-        this.vehicleId = vehicleId;
+    public SalesContract(String vin, String customerName, String customerEmail, double salesPrice, double salesTax, double processingFee, double totalPrice, double monthlyPayment) {
+        this.vin = vin;
         this.customerName = customerName;
         this.customerEmail = customerEmail;
         this.salesPrice = salesPrice;
@@ -24,12 +24,12 @@ public class SalesContract {
         this.monthlyPayment = monthlyPayment;
     }
 
-    public int getVehicleId() {
-        return vehicleId;
+    public String getVin() {
+        return vin;
     }
 
-    public void setVehicleId(int vehicleId) {
-        this.vehicleId = vehicleId;
+    public void setVin(String vin) {
+        this.vin = vin;
     }
 
     public String getCustomerName() {
@@ -91,7 +91,7 @@ public class SalesContract {
     @Override
     public String toString() {
         return "SalesContract{" +
-                "vehicleId=" + vehicleId +
+                "vin=" + vin +
                 ", customerName='" + customerName + '\'' +
                 ", customerEmail='" + customerEmail + '\'' +
                 ", salesPrice=" + salesPrice +

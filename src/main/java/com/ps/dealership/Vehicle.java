@@ -1,7 +1,6 @@
 package com.ps.dealership;
 
 public class Vehicle {
-    private int id;
     private String vin;
     private int year;
     private String make;
@@ -14,8 +13,7 @@ public class Vehicle {
     public Vehicle() {
     }
 
-    public Vehicle(int id, String vin, int year, String make, String model, String vehicleType, String color, int odometer, double price) {
-        this.id = id;
+    public Vehicle(String vin, int year, String make, String model, String vehicleType, String color, int odometer, double price) {
         this.vin = vin;
         this.year = year;
         this.make = make;
@@ -24,14 +22,6 @@ public class Vehicle {
         this.color = color;
         this.odometer = odometer;
         this.price = price;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getVin() {
@@ -101,7 +91,6 @@ public class Vehicle {
     @Override
     public String toString() {
         return "Vehicle{" +
-                "id=" + id +
                 ", vin='" + vin + '\'' +
                 ", year=" + year +
                 ", make='" + make + '\'' +
